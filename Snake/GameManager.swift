@@ -16,6 +16,10 @@ class GameManager {
     var timeExtension: Double = 0.2
     var playerDirection: Int = 1
     var currentScore: Int = 0
+    var portalTimer: Timer = Timer()
+    var portalGenerationTimer: Timer = Timer()
+    
+    private var secondsForPortal = 5
     
     init(scene: GameScene) {
         self.scene = scene
@@ -26,7 +30,8 @@ class GameManager {
         scene.playerPositions.append((10, 11))
         scene.playerPositions.append((10, 12))
         RenderChange()
-        GenerateNewPoint()
+        GenerateNewScore()
+        GenerateNewPortal()
     }
     
     func RenderChange() {
@@ -39,6 +44,12 @@ class GameManager {
                 if scene.scorePos != nil {
                     if Int((scene.scorePos?.x)!) == y && Int((scene.scorePos?.y)!) == x {
                         node.fillColor = SKColor.red
+                    }
+                }
+                if scene.portalPos.0 != nil {
+                    if( (Int((scene.portalPos.0?.x)!)) == y && Int((scene.portalPos.0?.y)!) == x ||
+                        (Int((scene.portalPos.1?.x)!)) == y && Int((scene.portalPos.1?.y)!) == x) {
+                        node.fillColor = SKColor.green
                     }
                 }
             }
@@ -63,8 +74,13 @@ class GameManager {
                 nextTime = time + timeExtension
                 UpdatePlayerPosition()
                 CheckForScore()
+                CheckForPortal()
                 CheckForDeath()
                 FinishAnimation()
+                
+                if !portalTimer.isValid && secondsForPortal != 0 {
+                    portalTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(UpdateTimer)), userInfo: nil, repeats: false)
+                }
             }
         }
     }
@@ -132,7 +148,18 @@ class GameManager {
         }
     }
     
-    private func GenerateNewPoint() {
+    @objc func UpdateTimer() {
+        secondsForPortal -= 1
+        if secondsForPortal == 0 {
+            portalTimer.invalidate()
+        }
+    }
+    
+    @objc func UpdateGenTimer() {
+        GenerateNewPortal()
+    }
+    
+    private func GenerateNewScore() {
         var randomX = CGFloat(arc4random_uniform(19))
         var randomY = CGFloat(arc4random_uniform(39))
         while Contains(a: scene.playerPositions, v: (Int(randomX), Int(randomY))) {
@@ -142,6 +169,27 @@ class GameManager {
         scene.scorePos = CGPoint(x: randomX, y: randomY)
     }
     
+    private func GenerateNewPortal() {
+        if !portalGenerationTimer.isValid {
+            portalGenerationTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(UpdateGenTimer)), userInfo: nil, repeats: false)
+            var possiblity = CGFloat(arc4random_uniform(100))
+            if possiblity > 75 {
+                if secondsForPortal == 0 {
+                    let randomX1 = CGFloat(arc4random_uniform(19)), randomX2 = CGFloat(arc4random_uniform(19))
+                    let randomY1 = CGFloat(arc4random_uniform(39)), randomY2 = CGFloat(arc4random_uniform(39))
+                    scene.portalPos = (CGPoint(x: randomX1, y: randomY1), CGPoint(x: randomX2, y: randomY2))
+                    secondsForPortal = 5
+                    print("Portal created")
+                }
+            }else {
+                possiblity = CGFloat(arc4random_uniform(100))
+            }
+            if secondsForPortal == 0 {
+                scene.portalPos = (nil, nil)
+            }
+        }
+    }
+    
     private func CheckForScore() {
         if scene.scorePos != nil {
             let x = scene.playerPositions[0].0
@@ -149,11 +197,31 @@ class GameManager {
             if Int((scene.scorePos?.x)!) == y && Int((scene.scorePos?.y)!) == x {
                 currentScore += 1
                 scene.currentScore.text = "Score: \(currentScore)"
-                GenerateNewPoint()
+                GenerateNewScore()
                 scene.playerPositions.append(scene.playerPositions.last!)
                 scene.playerPositions.append(scene.playerPositions.last!)
                 scene.playerPositions.append(scene.playerPositions.last!)
             }
+        }
+    }
+    
+    private func CheckForPortal() {
+        if scene.portalPos.0 != nil && scene.playerPositions.count != 0 {
+            for i in 0...scene.playerPositions.count-1 {
+                let playerCg = CGPoint(x: scene.playerPositions[i].1, y: scene.playerPositions[i].0)
+                if  playerCg == scene.portalPos.0 {
+                    scene.playerPositions[i] = (Int(scene.portalPos.1!.y), Int(scene.portalPos.1!.x))
+                } else if playerCg == scene.portalPos.1 {
+                    scene.playerPositions[i] = (Int(scene.portalPos.0!.y), Int(scene.portalPos.0!.x))
+                }
+            }
+            if secondsForPortal == 0 {
+                scene.portalPos = (nil, nil)
+            }
+        } else if secondsForPortal == 0 && scene.portalPos.0 != nil {
+            scene.portalPos = (nil, nil)
+        } else {
+            GenerateNewPortal()
         }
     }
     
