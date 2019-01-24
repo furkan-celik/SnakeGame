@@ -36,7 +36,7 @@ class GameManager {
     
     func RenderChange() {
         for (node, x, y) in scene.gameArray {
-            if Contains(a: scene.playerPositions, v: (x, y)) {
+            if scene.Contains(a: scene.playerPositions, v: (x, y)) {
                 node.fillColor = SKColor.cyan
             } else {
                 node.fillColor = SKColor.clear
@@ -52,18 +52,13 @@ class GameManager {
                         node.fillColor = SKColor.green
                     }
                 }
+                for enemy in scene.enemySnakes {
+                    if scene.Contains(a: enemy.snakePositions, v: (x, y)) {
+                        node.fillColor = SKColor.magenta
+                    }
+                }
             }
         }
-    }
-    
-    func Contains(a: [(Int, Int)], v: (Int, Int)) -> Bool {
-        let (c1, c2) = v
-        for (v1, v2) in a {
-            if v1 == c1 && v2 == c2 {
-                return true
-            }
-        }
-        return false
     }
     
     func Update(time: Double) {
@@ -73,8 +68,12 @@ class GameManager {
             if time >= nextTime! {
                 nextTime = time + timeExtension
                 UpdatePlayerPosition()
+                for enemy in scene.enemySnakes {
+                    enemy.Move()
+                }
                 CheckForScore()
                 CheckForPortal()
+                CheckForEnemy()
                 CheckForDeath()
                 FinishAnimation()
                 
@@ -125,11 +124,11 @@ class GameManager {
                 let x = scene.playerPositions[0].1
                 let y = scene.playerPositions[0].0
                 
-                if y > 40 {
+                if y > 39 {
                     scene.playerPositions[0].0 = 0
                 }else if y < 0 {
                     scene.playerPositions[0].0 = 40
-                }else if x > 20 {
+                }else if x > 19 {
                     scene.playerPositions[0].1 = 0
                 }else if x < 0 {
                     scene.playerPositions[0].1 = 20
@@ -162,7 +161,7 @@ class GameManager {
     private func GenerateNewScore() {
         var randomX = CGFloat(arc4random_uniform(19))
         var randomY = CGFloat(arc4random_uniform(39))
-        while Contains(a: scene.playerPositions, v: (Int(randomX), Int(randomY))) {
+        while scene.Contains(a: scene.playerPositions, v: (Int(randomX), Int(randomY))) {
             randomX = CGFloat(arc4random_uniform(19))
             randomY = CGFloat(arc4random_uniform(39))
         }
@@ -201,6 +200,13 @@ class GameManager {
                 scene.playerPositions.append(scene.playerPositions.last!)
                 scene.playerPositions.append(scene.playerPositions.last!)
                 scene.playerPositions.append(scene.playerPositions.last!)
+            } else {
+                for enemy in scene.enemySnakes {
+                    if Int(scene.scorePos!.x) == enemy.snakePositions[0].1 && Int(scene.scorePos!.y) == enemy.snakePositions[0].0 {
+                        GenerateNewScore()
+                        enemy.snakePositions.append(enemy.snakePositions.last!)
+                    }
+                }
             }
         }
     }
@@ -215,6 +221,16 @@ class GameManager {
                     scene.playerPositions[i] = (Int(scene.portalPos.0!.y), Int(scene.portalPos.0!.x))
                 }
             }
+            for enemy in scene.enemySnakes {
+                for i in 0...enemy.snakePositions.count-1 {
+                    let enemyCG = CGPoint(x: enemy.snakePositions[i].1, y: enemy.snakePositions[i].0)
+                    if enemyCG == scene.portalPos.0 {
+                        enemy.snakePositions[i] = (Int(scene.portalPos.1!.y), Int(scene.portalPos.1!.x))
+                    }else if enemyCG == scene.portalPos.1 {
+                        enemy.snakePositions[i] = (Int(scene.portalPos.0!.y), Int(scene.portalPos.0!.x))
+                    }
+                }
+            }
             if secondsForPortal == 0 {
                 scene.portalPos = (nil, nil)
             }
@@ -222,6 +238,32 @@ class GameManager {
             scene.portalPos = (nil, nil)
         } else {
             GenerateNewPortal()
+        }
+    }
+    
+    private func CheckForEnemy() {
+        if scene.enemySnakes.count > 0 && scene.playerPositions.count > 0 {
+            for enemy in scene.enemySnakes {
+                var arrayOfPositions = enemy.snakePositions
+                for i in 0...arrayOfPositions.count - 1 {
+                    if enemy.snakePositions[i] == scene.playerPositions[0] {
+                        if i >= 5 {
+                            let newEnemy = EnemySnake(scene: scene)
+                            for j in (i...arrayOfPositions.count - 1).reversed() {
+                                newEnemy.snakePositions.insert(enemy.snakePositions[j], at: 0)
+                                arrayOfPositions.remove(at: j)
+                            }
+                            scene.enemySnakes.append(newEnemy)
+                        } else {
+                            scene.enemySnakes = scene.enemySnakes.filter() { $0.snakePositions[0] != enemy.snakePositions[0] }
+                        }
+                    }
+                }
+                enemy.snakePositions = arrayOfPositions
+                if enemy.snakePositions.count <= 3 {
+                    scene.enemySnakes = scene.enemySnakes.filter() { $0.snakePositions[0] != enemy.snakePositions[0] }
+                }
+            }
         }
     }
     
@@ -250,14 +292,20 @@ class GameManager {
             var arrayOfPositions = scene.playerPositions
             let headOfSnake = arrayOfPositions[0]
             arrayOfPositions.remove(at: 0)
-            if Contains(a: arrayOfPositions, v: headOfSnake) {
+            if scene.Contains(a: arrayOfPositions, v: headOfSnake) {
                 if scene.playerPositions.count < 12 {
                     playerDirection = 0
                 }else {
                     for i in 1...scene.playerPositions.count-1 {
                         if headOfSnake == scene.playerPositions[i] {
-                            for j in (i...arrayOfPositions.count-1).reversed() {
-                                arrayOfPositions.remove(at: j)
+                            if i < arrayOfPositions.count-3 {
+                                let newEnemy = EnemySnake(scene: scene)
+                                for j in (i + 1...arrayOfPositions.count-1).reversed() {
+                                    newEnemy.snakePositions.append(arrayOfPositions[j])
+                                    arrayOfPositions.remove(at: j)
+                                }
+                                arrayOfPositions.remove(at: i)
+                                scene.enemySnakes.append(newEnemy)
                             }
                         }
                     }

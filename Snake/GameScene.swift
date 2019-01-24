@@ -17,6 +17,7 @@ class GameScene: SKScene {
     var game: GameManager!
     var currentScore: SKLabelNode!
     var playerPositions: [(Int, Int)] = []
+    var enemySnakes: [EnemySnake] = []
     var gameBG: SKShapeNode!
     var gameArray: [(name: SKShapeNode, x: Int, y: Int)] = []
     var scorePos: CGPoint?
@@ -175,5 +176,15 @@ class GameScene: SKScene {
             x = CGFloat(width / -2) + (cellWidth / 2)
             y -= cellWidth
         }
+    }
+    
+    func Contains(a: [(Int, Int)], v: (Int, Int)) -> Bool {
+        let (c1, c2) = v
+        for (v1, v2) in a {
+            if v1 == c1 && v2 == c2 {
+                return true
+            }
+        }
+        return false
     }
 }
