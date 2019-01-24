@@ -20,6 +20,7 @@ class GameScene: SKScene {
     var gameBG: SKShapeNode!
     var gameArray: [(name: SKShapeNode, x: Int, y: Int)] = []
     var scorePos: CGPoint?
+    var portalPos: (CGPoint?, CGPoint?)
     
     @objc func swipeL() {
         game.swipe(ID: 1)
