@@ -225,13 +225,45 @@ class GameManager {
         }
     }
     
+    private func FrontRow() -> (Int, Int){
+        if scene.playerPositions.count > 0 {
+            var arrayOfPositions = scene.playerPositions
+            let headOfSnake = arrayOfPositions[0]
+            switch playerDirection {
+            case 1: //left
+                return (headOfSnake.0, headOfSnake.1 - 1)
+            case 2: //up
+                return (headOfSnake.0 - 1, headOfSnake.1)
+            case 3: //right
+                return (headOfSnake.0, headOfSnake.1 + 1)
+            case 4: //down
+                return (headOfSnake.0 + 1, headOfSnake.1)
+            default:
+                break
+            }
+        }
+        return (0, 0)
+    }
+    
     private func CheckForDeath() {
         if scene.playerPositions.count > 0 {
             var arrayOfPositions = scene.playerPositions
             let headOfSnake = arrayOfPositions[0]
             arrayOfPositions.remove(at: 0)
             if Contains(a: arrayOfPositions, v: headOfSnake) {
-                playerDirection = 0
+                if scene.playerPositions.count < 12 {
+                    playerDirection = 0
+                }else {
+                    for i in 1...scene.playerPositions.count-1 {
+                        if headOfSnake == scene.playerPositions[i] {
+                            for j in (i...arrayOfPositions.count-1).reversed() {
+                                arrayOfPositions.remove(at: j)
+                            }
+                        }
+                    }
+                    scene.playerPositions = arrayOfPositions
+                    scene.playerPositions.insert(headOfSnake, at: 0)
+                }
             }
         }
     }
