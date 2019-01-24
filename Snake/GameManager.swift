@@ -359,4 +359,15 @@ class GameManager {
         scene.currentScore.text = "Score: 0"
         scene.bestScore.text = "Best Score: \(UserDefaults.standard.integer(forKey: "bestScore"))"
     }
+    
+    private func CreateEnemy(_scene: GameScene) -> EnemySnake {
+        let percentage = Int.random(in: 0...99)
+        if percentage < 65 {
+            return EnemySnake(scene: _scene)
+        }else if percentage < 80 {
+            return CrossMoveSnake(scene: _scene)
+        }else {
+            return PredatorSnake(scene: _scene)
+        }
+    }
 }

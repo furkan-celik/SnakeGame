@@ -16,6 +16,8 @@
 		5E4B259221F646F800839B9E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E4B259021F646F800839B9E /* LaunchScreen.storyboard */; };
 		5E4B259C21F647B200839B9E /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B259B21F647B200839B9E /* GameManager.swift */; };
 		5E4B259E21FA096800839B9E /* EnemySnake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B259D21FA096800839B9E /* EnemySnake.swift */; };
+		5E4B25A021FA558F00839B9E /* CrossMoveSnake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B259F21FA558F00839B9E /* CrossMoveSnake.swift */; };
+		5E4B25A221FA602800839B9E /* PredatorSnake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B25A121FA602800839B9E /* PredatorSnake.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		5E4B259321F646F800839B9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E4B259B21F647B200839B9E /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		5E4B259D21FA096800839B9E /* EnemySnake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnemySnake.swift; sourceTree = "<group>"; };
+		5E4B259F21FA558F00839B9E /* CrossMoveSnake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossMoveSnake.swift; sourceTree = "<group>"; };
+		5E4B25A121FA602800839B9E /* PredatorSnake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredatorSnake.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +76,8 @@
 				5E4B259321F646F800839B9E /* Info.plist */,
 				5E4B259B21F647B200839B9E /* GameManager.swift */,
 				5E4B259D21FA096800839B9E /* EnemySnake.swift */,
+				5E4B259F21FA558F00839B9E /* CrossMoveSnake.swift */,
+				5E4B25A121FA602800839B9E /* PredatorSnake.swift */,
 			);
 			path = Snake;
 			sourceTree = "<group>";
@@ -152,6 +158,8 @@
 				5E4B259E21FA096800839B9E /* EnemySnake.swift in Sources */,
 				5E4B259C21F647B200839B9E /* GameManager.swift in Sources */,
 				5E4B258A21F646F600839B9E /* GameViewController.swift in Sources */,
+				5E4B25A221FA602800839B9E /* PredatorSnake.swift in Sources */,
+				5E4B25A021FA558F00839B9E /* CrossMoveSnake.swift in Sources */,
 				5E4B258221F646F600839B9E /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

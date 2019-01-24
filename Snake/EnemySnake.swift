@@ -17,8 +17,10 @@ class EnemySnake {
         self.scene = scene
     }
     
-    func Move() {
-        SetDirection()
+    func Move(directionChange: Bool = true, cornerAdjust: Bool = true) {
+        if directionChange {
+            SetDirection()
+        }
         var xChange = -1
         var yChange = 0
         switch snakeDirection {
@@ -53,7 +55,15 @@ class EnemySnake {
                 start -= 1
             }
             snakePositions[0] = (snakePositions[0].0 + yChange, snakePositions[0].1 + xChange)
-            
+        }
+        
+        if cornerAdjust {
+            CornerAdjust()
+        }
+    }
+    
+    internal func CornerAdjust() {
+        if snakePositions.count > 0 {
             if snakePositions.count > 1 {
                 let x = snakePositions[0].1
                 let y = snakePositions[0].0
@@ -72,7 +82,7 @@ class EnemySnake {
     }
     
     func SetDirection() {
-        if scene.scorePos != nil && scene.scorePos!.x == CGFloat(snakePositions[0].1) {
+        if scene.scorePos != nil && scene.scorePos!.x == CGFloat(snakePositions[0].1) && snakeDirection != 0 {
             if scene.scorePos!.y > CGFloat(snakePositions[0].0) {
                 snakeDirection = 4
             }else {
@@ -85,20 +95,22 @@ class EnemySnake {
                 snakeDirection = 3
             }
         }
-        DetectCollusion()
+        DetectCollusion(tryLimit: 5)
     }
     
-    private func DetectCollusion() {
-        if scene.Contains(a: scene.playerPositions, v: FrontRow()) {
+    internal func DetectCollusion(tryLimit: Int) {
+        if scene.Contains(a: scene.playerPositions, v: FrontRow()) && tryLimit > 0 {
             snakeDirection = (snakeDirection + 1)
             if snakeDirection > 4 {
                 snakeDirection += 1
             }
-            DetectCollusion()
+            DetectCollusion(tryLimit: tryLimit - 1)
+        } else if tryLimit == 0 {
+            snakeDirection = 0
         }
     }
     
-    private func FrontRow() -> (Int, Int){
+    internal func FrontRow() -> (Int, Int){
         if snakePositions.count > 0 {
             var arrayOfPositions = snakePositions
             let headOfSnake = arrayOfPositions[0]
