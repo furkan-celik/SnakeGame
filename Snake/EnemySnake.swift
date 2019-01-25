@@ -71,11 +71,11 @@ class EnemySnake {
                 if y > 39 {
                     snakePositions[0].0 = 0
                 }else if y < 0 {
-                    snakePositions[0].0 = 40
+                    snakePositions[0].0 = 39
                 }else if x > 19 {
                     snakePositions[0].1 = 0
                 }else if x < 0 {
-                    snakePositions[0].1 = 20
+                    snakePositions[0].1 = 19
                 }
             }
         }

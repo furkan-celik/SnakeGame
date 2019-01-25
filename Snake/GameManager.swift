@@ -248,13 +248,14 @@ class GameManager {
                 for i in 0...arrayOfPositions.count - 1 {
                     if enemy.snakePositions[i] == scene.playerPositions[0] {
                         if i >= 5 {
-                            let newEnemy = EnemySnake(scene: scene)
+                            let newEnemy = CreateEnemy(_scene: scene)
                             for j in (i...arrayOfPositions.count - 1).reversed() {
                                 newEnemy.snakePositions.insert(enemy.snakePositions[j], at: 0)
                                 arrayOfPositions.remove(at: j)
                             }
                             scene.enemySnakes.append(newEnemy)
                         } else {
+                            currentScore += enemy.snakePositions.count / 2
                             scene.enemySnakes = scene.enemySnakes.filter() { $0.snakePositions[0] != enemy.snakePositions[0] }
                         }
                     }
@@ -299,7 +300,7 @@ class GameManager {
                     for i in 1...scene.playerPositions.count-1 {
                         if headOfSnake == scene.playerPositions[i] {
                             if i < arrayOfPositions.count-3 {
-                                let newEnemy = EnemySnake(scene: scene)
+                                let newEnemy = CreateEnemy(_scene: scene)
                                 for j in (i + 1...arrayOfPositions.count-1).reversed() {
                                     newEnemy.snakePositions.append(arrayOfPositions[j])
                                     arrayOfPositions.remove(at: j)
@@ -362,9 +363,9 @@ class GameManager {
     
     private func CreateEnemy(_scene: GameScene) -> EnemySnake {
         let percentage = Int.random(in: 0...99)
-        if percentage < 65 {
+        if percentage < 0 {
             return EnemySnake(scene: _scene)
-        }else if percentage < 80 {
+        }else if percentage < 0 {
             return CrossMoveSnake(scene: _scene)
         }else {
             return PredatorSnake(scene: _scene)
