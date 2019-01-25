@@ -363,7 +363,7 @@ class GameManager {
     
     private func CreateEnemy(_scene: GameScene) -> EnemySnake {
         let percentage = Int.random(in: 0...99)
-        if percentage < 0 {
+        if percentage < 100 {
             return EnemySnake(scene: _scene)
         }else if percentage < 0 {
             return CrossMoveSnake(scene: _scene)
